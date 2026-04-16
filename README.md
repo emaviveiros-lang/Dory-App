@@ -1,5 +1,7 @@
 # Dory-App
+
 Dory App 🐟
+
 A personal task, issue and note tracker that lives in your browser — just keep swimming through your to-dos.
 Features
 
