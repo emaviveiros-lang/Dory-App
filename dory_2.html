@@ -71,9 +71,12 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 .remind-inline select { flex: 1; }
 
 .items { flex: 1; }
-.item { background: var(--bg); border-bottom: 0.5px solid var(--border); padding: 11px 16px; display: flex; align-items: flex-start; gap: 12px; transition: background 0.1s; }
-.item:hover { background: var(--bg2); }
+.item { background: var(--bg); border-bottom: 0.5px solid var(--border); padding: 11px 16px; display: flex; align-items: flex-start; gap: 12px; transition: background 0.1s; border-radius: 8px; margin: 4px 8px; }
+.item:hover { opacity: 0.9; }
 .item.done { opacity: 0.4; }
+.item.type-task { background: #A8CAFF; border: 0.5px solid #185FA5; }
+.item.type-issue { background: #FCBABA; border: 0.5px solid #E24B4A; }
+.item.type-note { background: #D3D1C7; border: 0.5px solid #888780; }
 
 .check { width: 19px; height: 19px; border-radius: 50%; border: 1.5px solid rgba(0,0,0,0.22); flex-shrink: 0; margin-top: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
 @media (prefers-color-scheme: dark) { .check { border-color: rgba(255,255,255,0.25); } }
@@ -443,7 +446,7 @@ function render() {
   } else {
     list.innerHTML = filtered.map(function(item) {
       var due = formatDue(item.due);
-      return '<div class="item ' + (item.done ? 'done' : '') + '">' +
+      return '<div class="item type-' + item.type + ' ' + (item.done ? 'done' : '') + '">' +
         '<div class="check ' + (item.done ? 'checked' : '') + '" data-id="' + item.id + '"></div>' +
         '<div class="item-body">' +
           '<div class="item-title ' + (item.done ? 'done' : '') + '">' + esc(item.title) + '</div>' +
