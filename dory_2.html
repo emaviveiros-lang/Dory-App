@@ -319,7 +319,8 @@ function scheduleReminder(item) {
 function checkReminders() {
   if (!notifOn || Notification.permission !== 'granted') return;
   var now = Date.now();
-  items.filter(function(i) { return !i.done; }).forEach(function(item) {
+  var stored = JSON.parse(localStorage.getItem('dory_v1') || '[]');
+  stored.filter(function(i) { return !i.done; }).forEach(function(item) {
     var key = 'dory_next_' + item.id;
     var next = parseInt(localStorage.getItem(key));
     if (!next) {
@@ -329,15 +330,16 @@ function checkReminders() {
     if (now >= next) {
       new Notification('🐟 ' + item.title, {
         body: item.type + (item.due ? ' · due ' + formatDueStr(item.due) : '') + ' · every ' + item.remindLabel,
-        tag: 'dory-' + item.id,
-        icon: ''
+        tag: 'dory-' + item.id
       });
       localStorage.setItem(key, now + item.remindMs);
     }
   });
 }
 
-setInterval(checkReminders, 5000);
+setInterval(checkReminders, 15000);
+document.addEventListener('visibilitychange', function() { if (!document.hidden) checkReminders(); });
+window.addEventListener('focus', checkReminders);
 
 function addItem() {
   var title = document.getElementById('inp-title').value.trim();
