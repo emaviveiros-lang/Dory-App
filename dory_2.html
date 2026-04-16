@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dory App</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231c1c1e'/%3E%3Cg transform='translate(8,18)'%3E%3Cpath d='M62 42 L78 28 L78 56 Z' fill='%23EF9F27'/%3E%3Cpath d='M8 42 Q2 42 0 42 Q4 36 10 39Z' fill='%23185FA5'/%3E%3Cpath d='M8 42 Q2 42 0 42 Q4 48 10 45Z' fill='%23185FA5'/%3E%3Cpath d='M10 42 Q28 12 58 18 Q74 22 76 42 Q74 62 58 66 Q28 72 10 42Z' fill='%23185FA5'/%3E%3Cpath d='M20 20 Q42 12 55 15 Q42 8 20 20Z' fill='%23378ADD'/%3E%3Cpath d='M20 64 Q42 72 55 69 Q42 76 20 64Z' fill='%23378ADD'/%3E%3Cpath d='M16 26 Q44 18 62 24' stroke='%231c1c1e' stroke-width='4' stroke-linecap='round' fill='none'/%3E%3Cpath d='M14 34 Q44 26 64 32' stroke='%231c1c1e' stroke-width='3' stroke-linecap='round' fill='none'/%3E%3Cellipse cx='60' cy='34' rx='12' ry='11' fill='white'/%3E%3Cellipse cx='61' cy='33' rx='8' ry='8' fill='%23378ADD'/%3E%3Cellipse cx='61' cy='33' rx='5' ry='5' fill='%231c1c1e'/%3E%3Ccircle cx='58' cy='30' r='2' fill='white'/%3E%3C/g%3E%3C/svg%3E">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f5f5f7;
+  --bg2: #ebebed;
+  --bg3: #e0e0e2;
+  --text: #1c1c1e;
+  --text2: #636366;
+  --text3: #aeaeb2;
+  --border: rgba(0,0,0,0.09);
+  --accent: #185FA5;
+  --danger: #C0392B;
+  --success: #1D9E75;
+  --warn: #BA7517;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1c1e; --bg2: #2c2c2e; --bg3: #3a3a3c;
+    --text: #f5f5f7; --text2: #aeaeb2; --text3: #636366;
+    --border: rgba(255,255,255,0.09);
+  }
+}
+
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; }
+
+.layout { max-width: 560px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+
+.fish-banner { background: #1c1c1e; line-height: 0; font-size: 0; }
+.fish-banner svg { width: 100%; display: block; max-height: 160px; }
+
+.header { background: #1c1c1e; border-bottom: 0.5px solid var(--border); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+.header-left { display: flex; align-items: center; gap: 10px; }
+.header-title { font-size: 17px; font-weight: 700; color: #fff; }
+.open-badge { background: var(--danger); color: #fff; font-size: 11px; font-weight: 700; border-radius: 999px; padding: 2px 9px; min-width: 28px; text-align: center; }
+.open-badge.zero { background: var(--bg3); color: var(--text2); }
+.notif-btn { font-size: 12px; padding: 5px 12px; border-radius: 6px; border: 0.5px solid var(--border); background: var(--bg); color: var(--text2); cursor: pointer; font-family: inherit; }
+.notif-btn.on { color: var(--success); border-color: var(--success); }
+
+.tabs { display: flex; background: var(--bg2); border-bottom: 0.5px solid var(--border); position: sticky; top: 57px; z-index: 9; }
+.tab { flex: 1; text-align: center; padding: 9px 4px; font-size: 12px; color: var(--text2); cursor: pointer; border-bottom: 2px solid transparent; user-select: none; }
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 500; }
+
+.add-form { background: var(--bg2); border-bottom: 0.5px solid var(--border); padding: 12px 16px; }
+.add-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.add-input { flex: 1; background: var(--bg); border: 0.5px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 13px; color: var(--text); font-family: inherit; outline: none; }
+.add-input:focus { border-color: var(--accent); }
+.add-input::placeholder { color: var(--text3); }
+.type-select { background: var(--bg); border: 0.5px solid var(--border); border-radius: 8px; padding: 8px; font-size: 12px; color: var(--text); font-family: inherit; outline: none; cursor: pointer; }
+.add-btn { background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.add-btn:hover { opacity: 0.85; }
+
+.options-toggle { background: transparent; border: none; color: var(--text3); font-size: 12px; cursor: pointer; font-family: inherit; padding: 0; margin-bottom: 6px; display: block; }
+.options-toggle:hover { color: var(--text2); }
+.extra-options { display: none; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.extra-options.open { display: flex; }
+.extra-options input, .extra-options select { background: var(--bg); border: 0.5px solid var(--border); border-radius: 8px; padding: 6px 10px; font-size: 12px; color: var(--text); font-family: inherit; outline: none; flex: 1; min-width: 100px; }
+.remind-inline { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 200px; }
+.remind-inline span { font-size: 12px; color: var(--text2); white-space: nowrap; }
+.remind-inline input { width: 54px; flex: none; }
+.remind-inline select { flex: 1; }
+
+.items { flex: 1; }
+.item { background: var(--bg); border-bottom: 0.5px solid var(--border); padding: 11px 16px; display: flex; align-items: flex-start; gap: 12px; transition: background 0.1s; }
+.item:hover { background: var(--bg2); }
+.item.done { opacity: 0.4; }
+
+.check { width: 19px; height: 19px; border-radius: 50%; border: 1.5px solid rgba(0,0,0,0.22); flex-shrink: 0; margin-top: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+@media (prefers-color-scheme: dark) { .check { border-color: rgba(255,255,255,0.25); } }
+.check:hover { border-color: var(--success); }
+.check.checked { background: var(--success); border-color: var(--success); }
+.check.checked::after { content: ''; display: block; width: 5px; height: 8px; border: 1.5px solid #fff; border-top: none; border-left: none; transform: rotate(45deg) translateY(-1px); }
+
+.item-body { flex: 1; min-width: 0; }
+.item-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 4px; line-height: 1.4; }
+.item-title.done { text-decoration: line-through; color: var(--text2); font-weight: 400; }
+.item-meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.item-notes { font-size: 12px; color: var(--text2); margin-top: 6px; line-height: 1.5; white-space: pre-wrap; border-left: 2px solid var(--accent); padding-left: 8px; }
+
+.pill { font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.2px; }
+.pill-task { background: #E6F1FB; color: #0C447C; }
+.pill-issue { background: #FCEBEB; color: #A32D2D; }
+.pill-note { background: #F1EFE8; color: #444441; }
+@media (prefers-color-scheme: dark) {
+  .pill-task { background: #0C447C; color: #B5D4F4; }
+  .pill-issue { background: #7A1F1F; color: #F7C1C1; }
+  .pill-note { background: #3a3a3c; color: #D3D1C7; }
+}
+
+.due-label { font-size: 11px; color: var(--text2); }
+.due-label.overdue { color: var(--danger); font-weight: 500; }
+.due-label.soon { color: var(--warn); }
+.remind-label { font-size: 11px; color: var(--text3); }
+
+.item-actions { display: flex; gap: 4px; flex-shrink: 0; opacity: 0; transition: opacity 0.15s; margin-top: 1px; }
+.item:hover .item-actions { opacity: 1; }
+.action-btn { background: transparent; border: none; cursor: pointer; padding: 2px 5px; border-radius: 4px; font-size: 13px; color: var(--text3); font-family: inherit; }
+.action-btn:hover { background: var(--bg3); }
+.action-btn.edit:hover { color: var(--accent); }
+.action-btn.del:hover { color: var(--danger); }
+
+.empty { text-align: center; padding: 48px 20px; color: var(--text3); font-size: 13px; }
+.empty-icon { font-size: 36px; margin-bottom: 10px; opacity: 0.5; }
+
+.notif-bar { background: var(--bg2); border-top: 0.5px solid var(--border); padding: 10px 16px; display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text2); }
+.notif-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text3); flex-shrink: 0; }
+.notif-dot.on { background: var(--success); }
+
+.stats { background: var(--bg2); border-top: 0.5px solid var(--border); padding: 8px 16px; display: flex; gap: 16px; font-size: 11px; color: var(--text3); }
+.stats strong { color: var(--text2); font-weight: 500; }
+
+/* Modal */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--bg); border-radius: 16px; padding: 20px; width: 100%; max-width: 480px; border: 0.5px solid var(--border); }
+.modal-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 16px; }
+.modal-field { margin-bottom: 12px; }
+.modal-field label { display: block; font-size: 11px; color: var(--text2); margin-bottom: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.3px; }
+.modal-field input, .modal-field select, .modal-field textarea { width: 100%; background: var(--bg2); border: 0.5px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 13px; color: var(--text); font-family: inherit; outline: none; }
+.modal-field input:focus, .modal-field select:focus, .modal-field textarea:focus { border-color: var(--accent); }
+.modal-field textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+.modal-remind { display: flex; gap: 8px; align-items: center; }
+.modal-remind span { font-size: 12px; color: var(--text2); white-space: nowrap; }
+.modal-remind input { width: 60px; flex: none; }
+.modal-remind select { flex: 1; }
+.modal-actions { display: flex; gap: 8px; margin-top: 16px; }
+.modal-save { flex: 1; background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 10px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.modal-save:hover { opacity: 0.85; }
+.modal-cancel { background: transparent; color: var(--text2); border: 0.5px solid var(--border); border-radius: 8px; padding: 10px 16px; font-size: 13px; cursor: pointer; font-family: inherit; }
+.modal-cancel:hover { background: var(--bg2); }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <div class="fish-banner">
+    <svg viewBox="0 0 680 200" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="680" height="200" fill="#1c1c1e"/>
+      <circle cx="580" cy="50" r="40" fill="#0a2540" opacity="0.5"/>
+      <circle cx="80" cy="170" r="50" fill="#0a2540" opacity="0.4"/>
+      <g transform="translate(60, 20)">
+        <path d="M 210 80 L 248 52 L 248 108 Z" fill="#EF9F27"/>
+        <path d="M 215 80 L 244 58 L 244 102 Z" fill="#FAC775"/>
+        <path d="M 30 80 Q 15 80 5 80 Q 18 70 33 75 Z" fill="#185FA5"/>
+        <path d="M 30 80 Q 15 80 5 80 Q 18 90 33 85 Z" fill="#185FA5"/>
+        <path d="M 35 80 Q 80 24 168 36 Q 222 44 232 80 Q 222 116 168 124 Q 80 136 35 80 Z" fill="#185FA5"/>
+        <path d="M 60 42 Q 118 24 156 30 Q 118 18 60 42 Z" fill="#378ADD"/>
+        <path d="M 60 118 Q 118 136 156 130 Q 118 144 60 118 Z" fill="#378ADD"/>
+        <path d="M 50 56 Q 128 38 182 50" stroke="#1c1c1e" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <path d="M 44 70 Q 128 54 186 66" stroke="#1c1c1e" stroke-width="5" stroke-linecap="round" fill="none"/>
+        <path d="M 80 42 Q 112 28 136 32 L 136 22 Q 108 18 76 34 Z" fill="#185FA5"/>
+        <path d="M 80 118 Q 112 132 136 128 L 136 138 Q 108 142 76 126 Z" fill="#185FA5"/>
+        <ellipse cx="192" cy="68" rx="28" ry="26" fill="white"/>
+        <ellipse cx="195" cy="66" rx="19" ry="18" fill="#378ADD"/>
+        <ellipse cx="195" cy="66" rx="12" ry="12" fill="#1c1c1e"/>
+        <circle cx="189" cy="60" r="5" fill="white"/>
+        <circle cx="197" cy="68" r="2" fill="white"/>
+        <path d="M 214 77 Q 222 82 214 88" fill="none" stroke="#EF9F27" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+      <text x="390" y="95" font-family="-apple-system,sans-serif" font-size="42" font-weight="800" fill="white">Dory App</text>
+      <text x="390" y="125" font-family="-apple-system,sans-serif" font-size="13" fill="#378ADD" letter-spacing="2">just keep swimming...</text>
+    </svg>
+  </div>
+
+  <div class="header">
+    <div class="header-left">
+      <span class="header-title">Dory App</span>
+      <span class="open-badge zero" id="open-badge">0</span>
+    </div>
+    <button class="notif-btn" id="notif-btn" onclick="requestNotifications()">enable reminders</button>
+    <button class="notif-btn" id="test-btn" onclick="testNotif()" style="margin-left:6px;display:none;">test notif</button>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="all">all</div>
+    <div class="tab" data-tab="task">tasks</div>
+    <div class="tab" data-tab="issue">issues</div>
+    <div class="tab" data-tab="note">notes</div>
+    <div class="tab" data-tab="done">done</div>
+  </div>
+
+  <div class="add-form">
+    <div class="add-row">
+      <input type="text" class="add-input" id="inp-title" placeholder="add a task, issue or note..." />
+      <select class="type-select" id="inp-type">
+        <option value="task">task</option>
+        <option value="issue">issue</option>
+        <option value="note">note</option>
+      </select>
+      <button class="add-btn" id="add-btn">add</button>
+    </div>
+    <button class="options-toggle" id="opt-toggle">&#9658; set due date &amp; reminder interval</button>
+    <div class="extra-options" id="extra-opts">
+      <input type="datetime-local" id="inp-due" style="flex:1;min-width:160px;" />
+      <div class="remind-inline">
+        <span>remind every</span>
+        <input type="number" id="inp-n" value="1" min="1" />
+        <select id="inp-unit">
+          <option value="min">min</option>
+          <option value="hour" selected>hours</option>
+          <option value="day">days</option>
+        </select>
+        <span>until done</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="items" id="items-list"></div>
+
+  <div class="notif-bar">
+    <div class="notif-dot" id="notif-dot"></div>
+    <span id="notif-status">notifications off — click "enable reminders" to get desktop alerts</span>
+  </div>
+
+  <div class="stats" id="stats-bar"></div>
+
+</div>
+
+<!-- Edit modal -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">edit item</div>
+    <div class="modal-field">
+      <label>title</label>
+      <input type="text" id="edit-title" />
+    </div>
+    <div class="modal-field">
+      <label>type</label>
+      <select id="edit-type">
+        <option value="task">task</option>
+        <option value="issue">issue</option>
+        <option value="note">note</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>due date</label>
+      <input type="datetime-local" id="edit-due" />
+    </div>
+    <div class="modal-field">
+      <label>remind every</label>
+      <div class="modal-remind">
+        <input type="number" id="edit-n" value="1" min="1" />
+        <select id="edit-unit">
+          <option value="min">minutes</option>
+          <option value="hour">hours</option>
+          <option value="day">days</option>
+        </select>
+        <span>until done</span>
+      </div>
+    </div>
+    <div class="modal-field">
+      <label>notes / status</label>
+      <textarea id="edit-notes" placeholder="add status, context or any notes..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" id="modal-cancel">cancel</button>
+      <button class="modal-save" id="modal-save">save changes</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const MS = { min: 60000, hour: 3600000, day: 86400000 };
+let items = JSON.parse(localStorage.getItem('dory_v1') || '[]');
+let currentTab = 'all';
+let notifOn = false;
+let optOpen = false;
+let editingId = null;
+
+function save() {
+  localStorage.setItem('dory_v1', JSON.stringify(items));
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function unitLabel(n, unit) {
+  if (unit === 'min') return n + ' min';
+  if (unit === 'hour') return n + (n > 1 ? ' hours' : ' hour');
+  return n + (n > 1 ? ' days' : ' day');
+}
+
+function formatDue(due) {
+  if (!due) return null;
+  const diff = new Date(due) - new Date();
+  if (diff < 0) return { text: 'overdue', cls: 'overdue' };
+  const h = Math.floor(diff / 3600000);
+  if (h < 1) return { text: 'due in <1h', cls: 'soon' };
+  if (h < 24) return { text: 'due in ' + h + 'h', cls: 'soon' };
+  return { text: 'due in ' + Math.floor(diff / 86400000) + 'd', cls: '' };
+}
+
+function formatDueStr(due) {
+  return new Date(due).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+}
+
+function stopReminder(id) {
+  var key = 'dory_next_' + id;
+  localStorage.removeItem(key);
+}
+
+function scheduleReminder(item) {
+  if (item.done || !notifOn || !item.remindMs) return;
+  var key = 'dory_next_' + item.id;
+  if (!localStorage.getItem(key)) {
+    localStorage.setItem(key, Date.now() + item.remindMs);
+  }
+}
+
+function checkReminders() {
+  if (!notifOn || Notification.permission !== 'granted') return;
+  var now = Date.now();
+  items.filter(function(i) { return !i.done; }).forEach(function(item) {
+    var key = 'dory_next_' + item.id;
+    var next = parseInt(localStorage.getItem(key));
+    if (!next) {
+      localStorage.setItem(key, now + item.remindMs);
+      return;
+    }
+    if (now >= next) {
+      new Notification('reminder: ' + item.title, {
+        body: item.type + (item.due ? ' · due ' + formatDueStr(item.due) : '') + ' · every ' + item.remindLabel,
+        tag: 'dory-' + item.id
+      });
+      localStorage.setItem(key, now + item.remindMs);
+    }
+  });
+}
+
+setInterval(checkReminders, 10000);
+
+function addItem() {
+  var title = document.getElementById('inp-title').value.trim();
+  if (!title) { document.getElementById('inp-title').focus(); return; }
+  var n = parseInt(document.getElementById('inp-n').value) || 1;
+  var unit = document.getElementById('inp-unit').value;
+  var item = {
+    id: Date.now(),
+    title: title,
+    type: document.getElementById('inp-type').value,
+    due: document.getElementById('inp-due').value || null,
+    remindMs: n * MS[unit],
+    remindLabel: unitLabel(n, unit),
+    notes: '',
+    done: false,
+    created: Date.now()
+  };
+  items.unshift(item);
+  save();
+  scheduleReminder(item);
+  document.getElementById('inp-title').value = '';
+  render();
+}
+
+function toggleDone(id) {
+  var item = items.find(function(i) { return i.id === id; });
+  if (!item) return;
+  item.done = !item.done;
+  if (item.done) stopReminder(id);
+  else scheduleReminder(item);
+  save();
+  render();
+}
+
+function deleteItem(id) {
+  stopReminder(id);
+  items = items.filter(function(i) { return i.id !== id; });
+  save();
+  render();
+}
+
+function openEdit(id) {
+  var item = items.find(function(i) { return i.id === id; });
+  if (!item) return;
+  editingId = id;
+  document.getElementById('edit-title').value = item.title;
+  document.getElementById('edit-type').value = item.type;
+  document.getElementById('edit-due').value = item.due || '';
+  document.getElementById('edit-notes').value = item.notes || '';
+  var ms = item.remindMs || 3600000;
+  var n, unit;
+  if (ms % MS.day === 0) { n = ms / MS.day; unit = 'day'; }
+  else if (ms % MS.hour === 0) { n = ms / MS.hour; unit = 'hour'; }
+  else { n = ms / MS.min; unit = 'min'; }
+  document.getElementById('edit-n').value = n;
+  document.getElementById('edit-unit').value = unit;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal() {
+  editingId = null;
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+function saveEdit() {
+  var item = items.find(function(i) { return i.id === editingId; });
+  if (!item) return;
+  var n = parseInt(document.getElementById('edit-n').value) || 1;
+  var unit = document.getElementById('edit-unit').value;
+  var newTitle = document.getElementById('edit-title').value.trim();
+  if (newTitle) item.title = newTitle;
+  item.type = document.getElementById('edit-type').value;
+  item.due = document.getElementById('edit-due').value || null;
+  item.notes = document.getElementById('edit-notes').value.trim();
+  item.remindMs = n * MS[unit];
+  item.remindLabel = unitLabel(n, unit);
+  stopReminder(item.id);
+  if (!item.done) scheduleReminder(item);
+  save();
+  closeModal();
+  render();
+}
+
+function render() {
+  var open = items.filter(function(i) { return !i.done; }).length;
+  var badge = document.getElementById('open-badge');
+  badge.textContent = open;
+  badge.className = 'open-badge' + (open === 0 ? ' zero' : '');
+  document.title = open > 0 ? '(' + open + ') Dory App' : 'Dory App';
+
+  var filtered;
+  if (currentTab === 'done') filtered = items.filter(function(i) { return i.done; });
+  else if (currentTab === 'all') filtered = items.filter(function(i) { return !i.done; });
+  else filtered = items.filter(function(i) { return !i.done && i.type === currentTab; });
+
+  var list = document.getElementById('items-list');
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty"><div class="empty-icon">' + (currentTab === 'done' ? '&#10003;' : '&#9675;') + '</div>' + (currentTab === 'done' ? 'no completed items yet' : 'nothing here — add something above') + '</div>';
+  } else {
+    list.innerHTML = filtered.map(function(item) {
+      var due = formatDue(item.due);
+      return '<div class="item ' + (item.done ? 'done' : '') + '">' +
+        '<div class="check ' + (item.done ? 'checked' : '') + '" data-id="' + item.id + '"></div>' +
+        '<div class="item-body">' +
+          '<div class="item-title ' + (item.done ? 'done' : '') + '">' + esc(item.title) + '</div>' +
+          '<div class="item-meta">' +
+            '<span class="pill pill-' + item.type + '">' + item.type + '</span>' +
+            (due ? '<span class="due-label ' + due.cls + '">' + due.text + '</span>' : '') +
+            '<span class="remind-label">&#8635; every ' + esc(item.remindLabel) + '</span>' +
+          '</div>' +
+          (item.notes ? '<div class="item-notes">' + esc(item.notes) + '</div>' : '') +
+        '</div>' +
+        '<div class="item-actions">' +
+          '<button class="action-btn edit" data-edit="' + item.id + '">&#9998;</button>' +
+          '<button class="action-btn del" data-del="' + item.id + '">&#215;</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  var done = items.filter(function(i) { return i.done; }).length;
+  document.getElementById('stats-bar').innerHTML = '<span><strong>' + open + '</strong> open</span><span><strong>' + done + '</strong> done</span><span><strong>' + items.length + '</strong> total</span>';
+}
+
+function testNotif() {
+  if (Notification.permission === 'granted') {
+    new Notification('Dory App test', { body: 'notifications are working!' });
+  } else {
+    alert('Notifications not enabled yet — click "enable reminders" first');
+  }
+}
+
+function requestNotifications() {
+  if (!('Notification' in window)) { alert('Notifications not supported. Try Chrome.'); return; }
+  Notification.requestPermission().then(function(p) {
+    if (p === 'granted') {
+      notifOn = true;
+      document.getElementById('notif-dot').classList.add('on');
+      document.getElementById('notif-status').textContent = 'reminders on — desktop alerts active';
+      document.getElementById('notif-btn').textContent = 'reminders on';
+      document.getElementById('notif-btn').classList.add('on');
+      document.getElementById('test-btn').style.display = 'inline-block';
+      items.filter(function(i) { return !i.done; }).forEach(scheduleReminder);
+      new Notification('Dory App', { body: 'reminders are now active!' });
+    } else {
+      document.getElementById('notif-status').textContent = 'permission denied — allow notifications in browser settings';
+    }
+  });
+}
+
+document.getElementById('items-list').addEventListener('click', function(e) {
+  var check = e.target.closest('.check');
+  var editBtn = e.target.closest('[data-edit]');
+  var delBtn = e.target.closest('[data-del]');
+  if (check && check.dataset.id) toggleDone(Number(check.dataset.id));
+  if (editBtn) openEdit(Number(editBtn.dataset.edit));
+  if (delBtn) deleteItem(Number(delBtn.dataset.del));
+});
+
+document.getElementById('add-btn').addEventListener('click', addItem);
+document.getElementById('inp-title').addEventListener('keydown', function(e) { if (e.key === 'Enter') addItem(); });
+
+document.getElementById('opt-toggle').addEventListener('click', function() {
+  optOpen = !optOpen;
+  document.getElementById('extra-opts').classList.toggle('open', optOpen);
+  this.innerHTML = (optOpen ? '&#9660;' : '&#9658;') + ' set due date &amp; reminder interval';
+});
+
+document.querySelectorAll('.tab').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    currentTab = tab.dataset.tab;
+    document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+    tab.classList.add('active');
+    render();
+  });
+});
+
+document.getElementById('modal-cancel').addEventListener('click', closeModal);
+document.getElementById('modal-save').addEventListener('click', saveEdit);
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+if (Notification.permission === 'granted') {
+  notifOn = true;
+  document.getElementById('notif-dot').classList.add('on');
+  document.getElementById('notif-status').textContent = 'reminders on — desktop alerts active';
+  document.getElementById('notif-btn').textContent = 'reminders on';
+  document.getElementById('notif-btn').classList.add('on');
+  items.filter(function(i) { return !i.done; }).forEach(scheduleReminder);
+}
+
+render();
+</script>
+</body>
+</html>
