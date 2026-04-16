@@ -305,12 +305,11 @@ function formatDueStr(due) {
 }
 
 function stopReminder(id) {
-  var key = 'dory_next_' + id;
-  localStorage.removeItem(key);
+  localStorage.removeItem('dory_next_' + id);
 }
 
 function scheduleReminder(item) {
-  if (item.done || !notifOn || !item.remindMs) return;
+  if (item.done || !item.remindMs) return;
   var key = 'dory_next_' + item.id;
   if (!localStorage.getItem(key)) {
     localStorage.setItem(key, Date.now() + item.remindMs);
@@ -328,16 +327,17 @@ function checkReminders() {
       return;
     }
     if (now >= next) {
-      new Notification('reminder: ' + item.title, {
+      new Notification('🐟 ' + item.title, {
         body: item.type + (item.due ? ' · due ' + formatDueStr(item.due) : '') + ' · every ' + item.remindLabel,
-        tag: 'dory-' + item.id
+        tag: 'dory-' + item.id,
+        icon: ''
       });
       localStorage.setItem(key, now + item.remindMs);
     }
   });
 }
 
-setInterval(checkReminders, 10000);
+setInterval(checkReminders, 5000);
 
 function addItem() {
   var title = document.getElementById('inp-title').value.trim();
@@ -527,7 +527,9 @@ if (Notification.permission === 'granted') {
   document.getElementById('notif-status').textContent = 'reminders on — desktop alerts active';
   document.getElementById('notif-btn').textContent = 'reminders on';
   document.getElementById('notif-btn').classList.add('on');
+  document.getElementById('test-btn').style.display = 'inline-block';
   items.filter(function(i) { return !i.done; }).forEach(scheduleReminder);
+  checkReminders();
 }
 
 render();
